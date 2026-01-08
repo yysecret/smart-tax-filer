@@ -6,6 +6,34 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
+import streamlit as st
+
+def check_password():
+    """Returns True if the user had the correct password."""
+    def password_entered():
+        """Checks whether a password entered by the user is correct."""
+        if st.session_state["password"] == st.secrets["APP_PASSWORD"]:
+            st.session_state["password_correct"] = True
+            del st.session_state["password"]  # Don't store password
+        else:
+            st.session_state["password_correct"] = False
+
+    if "password_correct" not in st.session_state:
+        # First run, show input for password
+        st.text_input("Please enter the access password", type="password", on_change=password_entered, key="password")
+        return False
+    elif not st.session_state["password_correct"]:
+        # Password not correct, show input + error
+        st.text_input("Please enter the access password", type="password", on_change=password_entered, key="password")
+        st.error("😕 Password incorrect")
+        return False
+    else:
+        # Password correct
+        return True
+
+if not check_password():
+    st.stop()  # Do not run the rest of the app if not authenticated
+
 st.set_page_config(page_title="Smart Tax Filer", page_icon="💰", layout="wide")
 st.title("📂 Smart Tax Filer Agent")
 
@@ -79,4 +107,5 @@ with col_view:
         else:
             st.dataframe(full_history.tail(10), use_container_width=True)
     else:
+
         st.info("No records found yet. Upload your first receipt!")
