@@ -6,7 +6,12 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-st.set_page_config(page_title="Smart Tax Filer", page_icon="💰", layout="wide")
+st.set_page_config(
+    page_title="My Tax Agent | Secure Dashboard",
+    page_icon="💼",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
 DB_FILE = "tax_records.csv"
 
@@ -70,6 +75,16 @@ with st.sidebar:
         
         st.divider()
         st.download_button("Download CSV", data=open(DB_FILE, 'rb'), file_name="tax_records.csv")
+    
+    # Logout button - always visible at the bottom of the sidebar
+    st.divider()  # Optional: Adds a visual separator
+    if st.button("🔒 Log Out"):
+        # Clear password-related session state to return to login screen
+        if "password_correct" in st.session_state:
+            del st.session_state["password_correct"]
+        if "password" in st.session_state:
+            del st.session_state["password"]
+        st.rerun()
 
 # --- Main Interface ---
 col_upload, col_view = st.columns([1, 1])
