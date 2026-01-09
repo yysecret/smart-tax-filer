@@ -6,7 +6,9 @@ import pandas as pd
 import plotly.express as px
 from datetime import datetime
 
-import streamlit as st
+st.set_page_config(page_title="Smart Tax Filer", page_icon="💰", layout="wide")
+
+DB_FILE = "tax_records.csv"
 
 def check_password():
     """Returns True if the user had the correct password."""
@@ -20,24 +22,27 @@ def check_password():
 
     if "password_correct" not in st.session_state:
         # First run, show input for password
-        st.text_input("Please enter the access password", type="password", on_change=password_entered, key="password")
+        st.markdown("## 🔒 Private Access")
+        st.write("This Tax Agent is secured. Please enter your credentials.")
+        st.text_input("Password", type="password", on_change=password_entered, key="password")
+        st.caption("Protected by Streamlit Secrets")
         return False
     elif not st.session_state["password_correct"]:
         # Password not correct, show input + error
-        st.text_input("Please enter the access password", type="password", on_change=password_entered, key="password")
-        st.error("😕 Password incorrect")
+        st.markdown("## 🔒 Private Access")
+        st.write("This Tax Agent is secured. Please enter your credentials.")
+        st.text_input("Password", type="password", on_change=password_entered, key="password")
+        st.error("😕 Password incorrect. Please try again.")
         return False
     else:
         # Password correct
         return True
 
+# Password protection - check before showing the app
 if not check_password():
-    st.stop()  # Do not run the rest of the app if not authenticated
+    st.stop()  # Stop execution if password is incorrect
 
-st.set_page_config(page_title="Smart Tax Filer", page_icon="💰", layout="wide")
 st.title("📂 Smart Tax Filer Agent")
-
-DB_FILE = "tax_records.csv"
 
 def save_to_csv(data):
     record = data.model_dump()
@@ -107,5 +112,4 @@ with col_view:
         else:
             st.dataframe(full_history.tail(10), use_container_width=True)
     else:
-
         st.info("No records found yet. Upload your first receipt!")
